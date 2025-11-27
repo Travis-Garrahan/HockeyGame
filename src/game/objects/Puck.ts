@@ -1,11 +1,11 @@
 export default class Puck{
-    private scene: Phaser.Scene;
-    private graphics: Phaser.GameObjects.Graphics;
+    private body: Phaser.Physics.Arcade.Body;
+    private sprite: Phaser.GameObjects.Arc;
 
     x: number;
     y: number;
     radius: number;
-    color: number; 
+    color: number;
 
     constructor(
         scene: Phaser.Scene,
@@ -14,24 +14,23 @@ export default class Puck{
         radius: number = 12,
         color: number = 0x000000
     ) {
-        this.scene = scene;
+
+        this.sprite = scene.add.circle(x, y, radius, color) as Phaser.GameObjects.Arc;
+        scene.physics.add.existing(this.sprite, false);
+
+        this.body = this.sprite.body as Phaser.Physics.Arcade.Body;
+        this.body.setCollideWorldBounds(true);
+        this.body.setBounce(0.4);
+        this.body.setDrag(100, 100);
+
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.color = color;
-
-        this.graphics = this.scene.add.graphics();
     }
 
-    draw(): void {
-        this.graphics.clear();
-        this.graphics.fillStyle(this.color, 1);
-        this.graphics.fillCircle(this.x, this.y, this.radius);
+    getSprite(){
+        return this.sprite;
     }
-
-    getBounds(){
-        //TODO: return boundaries for collision detection
-    }
-
 
 }

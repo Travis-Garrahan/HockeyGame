@@ -1,5 +1,4 @@
 export default class Player{
-    private scene: Phaser.Scene;
     private graphics: Phaser.GameObjects.Graphics;
     private sprite: Phaser.GameObjects.Sprite;
 
@@ -8,7 +7,6 @@ export default class Player{
     private velocity: Phaser.Math.Vector2;
     private acceleration: number;
     private deceleration: number;
-
 
 
     constructor(
@@ -20,20 +18,20 @@ export default class Player{
         acceleration: number = 600,
         deceleration: number = 800
     ) {
-        this.sprite = scene.add.sprite(x, y, textureKey);
-        this.scene = scene;
+        this.sprite = scene.physics.add.sprite(x, y, textureKey)
+            .setCollideWorldBounds(true);
         this.speed = maxSpeed;
         this.acceleration = acceleration;
         this.deceleration = deceleration;
         this.velocity = new Phaser.Math.Vector2(0,0);
+
+
     }
 
     init(): void
     {
         // makes sprite responsive to input
         this.sprite.setInteractive();
-
-
     }
 
     draw(): void 
@@ -66,9 +64,10 @@ export default class Player{
             this.velocity = this.velocity.clone().normalize().scale(this.speed);
         }
 
-
         this.sprite.x += this.velocity.x * deltaSec;
         this.sprite.y += this.velocity.y * deltaSec;
+
+
     }
 
     getSprite()
