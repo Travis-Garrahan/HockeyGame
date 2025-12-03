@@ -8,6 +8,8 @@ export class Game extends Phaser.Scene
     private puck!: Puck;
     private player: Player;
     private inputManager: InputManager;
+    private isDribbling: boolean = false;
+    private spaceKey: any;
 
 
     constructor ()
@@ -23,6 +25,19 @@ export class Game extends Phaser.Scene
         this.player = new Player(this, 100, 100, 'player', 400, 1200, 800);
 
         this.inputManager = new InputManager(this);
+
+        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+        this.spaceKey.on('down', () =>{
+           this.isDribbling = true;
+        });
+
+        this.spaceKey.on('up', () =>{
+            this.isDribbling = false;
+        })
+
+
+
 
         this.aimLine = this.add.graphics();
     }
@@ -101,6 +116,30 @@ export class Game extends Phaser.Scene
         playerSprite.rotation = angle + Phaser.Math.DegToRad(90);
     }
 
+    updateDribble(){
+        if(!this.isDribbling) return;
+
+        const puck = this.puck.getSprite();
+        const puckBody = puck.body as Phaser.Physics.Arcade.Body;
+        const player = this.player.getSprite();
+
+        const dist = Phaser.Math.Distance.Between(player.x, player.y, puck.x, puck.y);
+        if (dist > 40) return;
+
+        // direction player is facing
+        const angle = player.rotation- Phaser.Math.DegToRad(90);
+        const facing = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle));
+
+        // fixed offset in front of the player
+        const offset = 25;
+
+        puck.x = player.x + facing.x * offset;
+        puck.y = player.y + facing.y * offset;
+
+        const body = puck.body as Phaser.Physics.Arcade.Body;
+        body.setVelocity(0, 0);
+
+    }
 
     update(_time: number, delta: number)
     {
@@ -110,5 +149,6 @@ export class Game extends Phaser.Scene
         this.handleAiming();
         this.handleShooting();
         this.rotatePlayerTowardPointer();
+        this.updateDribble();
     }
 }

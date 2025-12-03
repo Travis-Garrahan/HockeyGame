@@ -1,4 +1,5 @@
 import { Scene } from 'phaser';
+import Webfont from 'webfontloader';
 
 export class Preloader extends Scene
 {
@@ -32,7 +33,18 @@ export class Preloader extends Scene
         //  Load the assets for the game - Replace with your own assets
         this.load.setPath('assets');
         this.load.spritesheet('player', 'team2-goalie.png', { frameWidth: 128, frameHeight: 128})
+        this.load.image('slapshot-info', 'assets/slapshot-info.png')
         this.load.image('logo', 'logo.png');
+
+        Webfont.load({
+            custom:{
+                families: ["MyFont"]
+            },
+            active: () => {
+                this.scene.start("MainMenu")
+            }
+
+        });
     }
 
     create ()
